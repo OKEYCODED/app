@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Local List Manager</title>
+    <title>Local List Manager | Visual</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
@@ -20,21 +20,6 @@
             overflow: hidden;
         }
 
-        /* Custom scrollbar for a cleaner look */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #dadce0;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #bdc1c6;
-        }
-
         .animate-in {
             animation: fadeIn 0.2s ease-out;
         }
@@ -42,6 +27,29 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        .image-preview-container {
+            max-height: 200px;
+            overflow: hidden;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+
+        .image-preview-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .upload-zone {
+            border: 2px dashed #dadce0;
+            transition: all 0.2s;
+        }
+
+        .upload-zone:hover {
+            border-color: #4285f4;
+            background-color: #f8fbff;
         }
     </style>
 </head>
@@ -62,7 +70,7 @@
                 <input 
                     type="text" 
                     id="searchInput"
-                    placeholder="Search your items..." 
+                    placeholder="Search titles or notes..." 
                     class="w-full bg-[#f1f3f4] border-transparent focus:bg-white focus:shadow-md py-3 pl-12 pr-4 rounded-lg outline-none transition-all"
                 >
             </div>
@@ -89,22 +97,17 @@
                 <div class="p-4 bg-blue-50 rounded-lg">
                     <div class="flex gap-2 text-blue-700 mb-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                        <span class="text-xs font-bold uppercase">Privacy Note</span>
+                        <span class="text-xs font-bold uppercase">Local-First</span>
                     </div>
-                    <p class="text-xs text-blue-800 leading-relaxed">Everything is stored locally in your browser. No data is sent to a server.</p>
+                    <p class="text-xs text-blue-800 leading-relaxed">Images are stored in your browser's IndexedDB. They are not uploaded to any server.</p>
                 </div>
 
                 <div class="space-y-2">
                     <p class="text-xs font-bold text-gray-500 uppercase">Backup</p>
                     <button id="exportBtn" class="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-100 rounded-md border border-gray-200">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Export as JSON
+                        Export List (JSON)
                     </button>
-                    <button id="importBtnTrigger" class="w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-gray-100 rounded-md border border-gray-200">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                        Import from File
-                    </button>
-                    <input type="file" id="fileInput" class="hidden" accept=".json">
                 </div>
 
                 <div class="pt-4 border-t">
@@ -133,10 +136,6 @@
                             <svg class="text-blue-500" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                             <span>Add Item</span>
                         </button>
-                        <button id="copyListBtn" title="Copy list" class="p-2 hover:bg-gray-100 rounded-full text-[#5f6368]">
-                            <svg id="copyIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                            <svg id="checkIcon" class="hidden text-green-600" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                        </button>
                     </div>
                 </div>
 
@@ -147,29 +146,61 @@
         </main>
     </div>
 
-    <!-- Modal for adding items -->
-    <div id="addModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-[1px] p-4">
-        <form id="addForm" class="bg-white rounded-lg shadow-2xl border border-[#dadce0] w-full max-w-md overflow-hidden">
-            <div class="bg-[#f8f9fa] px-4 py-2 border-b flex justify-between items-center">
-                <span class="text-sm font-medium">New Entry</span>
-                <button type="button" class="closeModalBtn p-1 hover:bg-gray-200 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    <!-- Modal for adding/editing items -->
+    <div id="addModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+        <form id="addForm" class="bg-white rounded-xl shadow-2xl border border-[#dadce0] w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-[#f8f9fa] px-6 py-4 border-b flex justify-between items-center">
+                <span id="modalHeaderTitle" class="text-sm font-semibold text-[#5f6368] uppercase tracking-wider">New Entry</span>
+                <button type="button" class="closeModalBtn p-1 hover:bg-gray-200 rounded-full transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
-            <div class="p-6 space-y-4">
-                <input id="titleInput" required placeholder="Title" class="text-xl w-full border-b-2 border-transparent focus:border-blue-500 outline-none pb-2 transition-colors">
-                <div class="flex items-center gap-3 text-[#5f6368]">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    <input type="date" id="dateInput" class="outline-none focus:bg-gray-50 rounded p-1 flex-1">
+            
+            <div class="p-6 space-y-5 overflow-y-auto">
+                <div>
+                    <input id="titleInput" required placeholder="What are you recording?" class="text-2xl w-full border-b border-[#dadce0] focus:border-blue-500 outline-none pb-2 transition-colors font-medium">
                 </div>
-                <div class="flex items-start gap-3 text-[#5f6368]">
-                    <svg class="mt-1" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
-                    <textarea id="noteInput" placeholder="Notes (optional)" class="w-full outline-none focus:bg-gray-50 rounded p-1 flex-1 resize-none h-24"></textarea>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="flex items-center gap-3 text-[#5f6368] bg-[#f8f9fa] p-2 rounded-lg border border-[#dadce0]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <input type="date" id="dateInput" class="bg-transparent outline-none flex-1 text-sm font-medium">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2 text-sm font-medium text-[#5f6368]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                        <span>Notes</span>
+                    </div>
+                    <textarea id="noteInput" placeholder="Add some details..." class="w-full bg-[#f8f9fa] border border-[#dadce0] focus:border-blue-500 focus:bg-white outline-none rounded-lg p-3 flex-1 resize-none h-24 transition-all"></textarea>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex items-center gap-2 text-sm font-medium text-[#5f6368]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <span>Attach Photo</span>
+                    </div>
+                    
+                    <div id="imageUploadZone" class="upload-zone h-40 rounded-xl flex flex-col items-center justify-center cursor-pointer relative overflow-hidden">
+                        <input type="file" id="imageInput" class="hidden" accept="image/*">
+                        <div id="uploadPlaceholder" class="flex flex-col items-center text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mb-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <span class="text-xs font-medium">Click to upload or drag & drop</span>
+                        </div>
+                        <div id="imagePreview" class="absolute inset-0 hidden">
+                            <img id="previewImg" class="w-full h-full object-cover">
+                            <button type="button" id="removeImgBtn" class="absolute top-2 right-2 bg-black/60 text-white p-1 rounded-full hover:bg-black transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="px-6 py-4 bg-gray-50 flex justify-end gap-2">
-                <button type="button" class="closeModalBtn px-4 py-2 text-sm font-medium hover:bg-gray-100 rounded transition-colors">Cancel</button>
-                <button type="submit" class="px-6 py-2 text-sm font-medium bg-[#1a73e8] text-white rounded hover:bg-[#1557b0] shadow transition-colors">Save</button>
+
+            <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3 border-t">
+                <button type="button" class="closeModalBtn px-4 py-2 text-sm font-semibold hover:bg-gray-200 rounded-lg transition-colors">Cancel</button>
+                <button type="submit" class="px-8 py-2 text-sm font-semibold bg-[#1a73e8] text-white rounded-lg hover:bg-[#1557b0] shadow-md transition-colors">Save Entry</button>
             </div>
         </form>
     </div>
@@ -181,22 +212,27 @@
                 <span class="month text-[10px] uppercase font-bold tracking-widest opacity-60"></span>
                 <span class="day text-2xl font-light"></span>
             </div>
-            <div class="flex-1 bg-white border border-[#dadce0] rounded-lg p-4 hover:shadow-md transition-all cursor-default group">
-                <div class="flex justify-between items-start">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2">
-                            <div class="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"></div>
-                            <h3 class="title font-medium text-[16px] truncate"></h3>
+            <div class="flex-1 bg-white border border-[#dadce0] rounded-xl p-0 hover:shadow-lg transition-all cursor-default group overflow-hidden">
+                <div class="item-img-container h-48 w-full bg-gray-100 hidden">
+                    <img class="item-img w-full h-full object-cover">
+                </div>
+                <div class="p-5">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"></div>
+                                <h3 class="title font-semibold text-lg text-[#202124] truncate"></h3>
+                            </div>
+                            <p class="note text-sm text-[#5f6368] mt-2 ml-4 border-l-2 border-gray-100 pl-3 italic line-clamp-3 hidden"></p>
                         </div>
-                        <p class="note text-sm text-[#5f6368] mt-2 ml-4 border-l-2 border-gray-100 pl-3 italic line-clamp-3 hidden"></p>
-                    </div>
-                    <div class="opacity-0 group-hover:opacity-100 flex gap-1 transition-opacity ml-4">
-                        <button class="editBtn p-2 hover:bg-gray-100 rounded-full text-[#5f6368]">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
-                        </button>
-                        <button class="deleteBtn p-2 hover:bg-red-50 rounded-full text-red-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                        </button>
+                        <div class="flex gap-1 ml-4 flex-shrink-0">
+                            <button class="editBtn p-2 hover:bg-gray-100 rounded-full text-[#5f6368] transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+                            </button>
+                            <button class="deleteBtn p-2 hover:bg-red-50 rounded-full text-red-400 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -204,22 +240,58 @@
     </template>
 
     <script>
+        // --- Database Management (IndexedDB for Images) ---
+        const DB_NAME = 'LocalListDB';
+        const STORE_NAME = 'items';
+        let db;
+
+        const request = indexedDB.open(DB_NAME, 1);
+        request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            }
+        };
+        request.onsuccess = (e) => {
+            db = e.target.result;
+            loadAndRender();
+        };
+
         // --- State Management ---
-        let items = JSON.parse(localStorage.getItem('local_list_manager_data')) || [
-            { id: '1', text: 'Welcome to Local List', note: 'No sign-in required. Data stays on your device.', date: new Date().toISOString().split('T')[0], timestamp: Date.now() }
-        ];
+        let items = [];
         let sortOrder = 'date-asc';
         let searchQuery = '';
         let editingId = null;
+        let currentImageBase64 = null;
 
         const container = document.getElementById('itemsContainer');
         const searchInput = document.getElementById('searchInput');
         const addModal = document.getElementById('addModal');
         const settingsSidebar = document.getElementById('settingsSidebar');
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
 
         // --- Core Functions ---
-        function saveToStorage() {
-            localStorage.setItem('local_list_manager_data', JSON.stringify(items));
+        async function loadAndRender() {
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const store = tx.objectStore(STORE_NAME);
+            const request = store.getAll();
+            request.onsuccess = () => {
+                items = request.result;
+                render();
+            };
+        }
+
+        function saveToDB(item) {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            tx.objectStore(STORE_NAME).put(item);
+        }
+
+        function removeFromDB(id) {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            tx.objectStore(STORE_NAME).delete(id);
         }
 
         function render() {
@@ -227,11 +299,10 @@
             
             let filtered = items.filter(item => 
                 item.text.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                item.note.toLowerCase().includes(searchQuery.toLowerCase())
+                (item.note && item.note.toLowerCase().includes(searchQuery.toLowerCase()))
             );
 
             if (sortOrder === 'asc') filtered.sort((a, b) => a.text.localeCompare(b.text));
-            else if (sortOrder === 'desc') filtered.sort((a, b) => b.text.localeCompare(a.text));
             else if (sortOrder === 'date-asc') filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
             else if (sortOrder === 'date-desc') filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -239,8 +310,8 @@
                 container.innerHTML = `
                     <div class="text-center py-24 text-[#70757a]">
                         <svg class="mx-auto mb-4 opacity-10" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/><path d="m3 6 3-3 3 3"/><path d="m3 12 3-3 3 3"/><path d="m3 18 3-3 3 3"/></svg>
-                        <p class="text-lg">Your list is currently empty</p>
-                        <p class="text-sm mt-1">Click "Add Item" to get started.</p>
+                        <p class="text-lg">Nothing found here</p>
+                        <p class="text-sm mt-1">Start by adding a new visual entry.</p>
                     </div>
                 `;
                 return;
@@ -255,6 +326,13 @@
                 clone.querySelector('.day').textContent = dateObj.getDate();
                 clone.querySelector('.title').textContent = item.text;
                 
+                if (item.image) {
+                    const imgContainer = clone.querySelector('.item-img-container');
+                    const img = clone.querySelector('.item-img');
+                    img.src = item.image;
+                    imgContainer.classList.remove('hidden');
+                }
+
                 if (item.note) {
                     const noteEl = clone.querySelector('.note');
                     noteEl.textContent = item.note;
@@ -262,16 +340,27 @@
                 }
 
                 clone.querySelector('.deleteBtn').onclick = () => {
+                    removeFromDB(item.id);
                     items = items.filter(i => i.id !== item.id);
-                    saveToStorage();
                     render();
                 };
 
                 clone.querySelector('.editBtn').onclick = () => {
                     editingId = item.id;
+                    document.getElementById('modalHeaderTitle').textContent = 'Edit Entry';
                     document.getElementById('titleInput').value = item.text;
                     document.getElementById('dateInput').value = item.date;
-                    document.getElementById('noteInput').value = item.note;
+                    document.getElementById('noteInput').value = item.note || '';
+                    
+                    if (item.image) {
+                        currentImageBase64 = item.image;
+                        previewImg.src = item.image;
+                        imagePreview.classList.remove('hidden');
+                        uploadPlaceholder.classList.add('hidden');
+                    } else {
+                        resetImageInput();
+                    }
+                    
                     addModal.classList.remove('hidden');
                 };
 
@@ -279,12 +368,51 @@
             });
         }
 
-        // --- Event Handlers ---
+        function resetImageInput() {
+            currentImageBase64 = null;
+            imageInput.value = '';
+            imagePreview.classList.add('hidden');
+            uploadPlaceholder.classList.remove('hidden');
+            previewImg.src = '';
+        }
 
-        // Add Item Modal
+        // --- Image Handling ---
+        function handleImage(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentImageBase64 = e.target.result;
+                previewImg.src = currentImageBase64;
+                imagePreview.classList.remove('hidden');
+                uploadPlaceholder.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        const uploadZone = document.getElementById('imageUploadZone');
+        uploadZone.onclick = () => imageInput.click();
+        imageInput.onchange = (e) => handleImage(e.target.files[0]);
+
+        uploadZone.ondragover = (e) => { e.preventDefault(); uploadZone.classList.add('bg-blue-50'); };
+        uploadZone.ondragleave = () => uploadZone.classList.remove('bg-blue-50');
+        uploadZone.ondrop = (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('bg-blue-50');
+            handleImage(e.dataTransfer.files[0]);
+        };
+
+        document.getElementById('removeImgBtn').onclick = (e) => {
+            e.stopPropagation();
+            resetImageInput();
+        };
+
+        // --- Event Handlers ---
         document.getElementById('addItemBtn').onclick = () => {
             editingId = null;
+            document.getElementById('modalHeaderTitle').textContent = 'New Entry';
             document.getElementById('addForm').reset();
+            resetImageInput();
             document.getElementById('dateInput').value = new Date().toISOString().split('T')[0];
             addModal.classList.remove('hidden');
         };
@@ -299,24 +427,32 @@
             const date = document.getElementById('dateInput').value;
             const note = document.getElementById('noteInput').value;
 
+            const entry = {
+                id: editingId || crypto.randomUUID(),
+                text,
+                date,
+                note,
+                image: currentImageBase64,
+                timestamp: Date.now()
+            };
+
+            saveToDB(entry);
+            
             if (editingId) {
-                items = items.map(i => i.id === editingId ? { ...i, text, date, note } : i);
+                items = items.map(i => i.id === editingId ? entry : i);
             } else {
-                items.push({ id: crypto.randomUUID(), text, date, note, timestamp: Date.now() });
+                items.push(entry);
             }
             
-            saveToStorage();
             render();
             addModal.classList.add('hidden');
         };
 
-        // Search
         searchInput.oninput = (e) => {
             searchQuery = e.target.value;
             render();
         };
 
-        // Sorting
         document.getElementById('sortDateBtn').onclick = (e) => {
             sortOrder = 'date-asc';
             e.target.classList.add('bg-[#1a73e8]', 'text-white');
@@ -331,71 +467,29 @@
             render();
         };
 
-        // Copy List
-        document.getElementById('copyListBtn').onclick = () => {
-            const textToCopy = items.map(i => `${i.date}: ${i.text}${i.note ? ` (${i.note})` : ''}`).join('\n');
-            const textArea = document.createElement("textarea");
-            textArea.value = textToCopy;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-
-            document.getElementById('copyIcon').classList.add('hidden');
-            document.getElementById('checkIcon').classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('copyIcon').classList.remove('hidden');
-                document.getElementById('checkIcon').classList.add('hidden');
-            }, 2000);
-        };
-
-        // Settings sidebar
         document.getElementById('settingsBtn').onclick = () => settingsSidebar.classList.remove('hidden');
         document.getElementById('closeSettingsBtn').onclick = () => settingsSidebar.classList.add('hidden');
 
-        // Export/Import
         document.getElementById('exportBtn').onclick = () => {
+            // Exports metadata, images included as base64
             const dataStr = JSON.stringify(items, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', 'my-list-backup.json');
-            linkElement.click();
-        };
-
-        document.getElementById('importBtnTrigger').onclick = () => document.getElementById('fileInput').click();
-        
-        document.getElementById('fileInput').onchange = (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                try {
-                    const json = JSON.parse(event.target.result);
-                    if (Array.isArray(json)) {
-                        items = json;
-                        saveToStorage();
-                        render();
-                        settingsSidebar.classList.add('hidden');
-                    }
-                } catch (err) {
-                    alert("Invalid file format.");
-                }
-            };
-            reader.readAsText(file);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'local-list-export.json';
+            link.click();
         };
 
         document.getElementById('wipeBtn').onclick = () => {
-            if(confirm("This will permanently delete your local data. Proceed?")) {
+            if(confirm("Permanently wipe all local entries and photos?")) {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                tx.objectStore(STORE_NAME).clear();
                 items = [];
-                saveToStorage();
                 render();
                 settingsSidebar.classList.add('hidden');
             }
         };
-
-        // Initial render
-        render();
 
     </script>
 </body>
